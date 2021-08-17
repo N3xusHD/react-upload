@@ -65,7 +65,7 @@
     "@ffmpeg/core": "^0.10.0",
     "@ffmpeg/ffmpeg": "^0.10.1",
     "@ramonak/react-progress-bar": "^3.2.1",
-    "browser-fs-access": "^0.20.3",
+    "browser-fs-access": "^0.20.4",
     "fflate": "^0.7.1",
     "jszip": "^3.7.1",
     "native-file-system-adapter": "^1.0.1",

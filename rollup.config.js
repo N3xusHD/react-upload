@@ -66,8 +66,8 @@ export default {
     }),
   ],
   external: (id) => {
-    return [...Object.keys(globals), "media-info-lib"].some((e) =>
-      id.includes(e)
+    return [...Object.keys(globals)].some(
+      (e) => path.basename(e) === path.basename(id, path.extname(id))
     );
   },
 };

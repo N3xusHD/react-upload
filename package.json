@@ -45,7 +45,7 @@
     "@rollup/plugin-replace": "^3.0.0",
     "@rollup/plugin-typescript": "^8.2.5",
     "@types/parse-torrent": "^5.8.4",
-    "@types/react": "^17.0.16",
+    "@types/react": "^17.0.18",
     "babelify": "^10.0.0",
     "colorette": "^1.2.2",
     "esm": "^3.2.25",

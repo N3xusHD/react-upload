@@ -194,7 +194,7 @@ export function TitleRow({
     <Row>
       <RowHead {...res} title={title} isRequired={isRequired} />
       <RowField message={message}>
-        <TitleInput value={value} onChange={onChange} />
+        <TitleInput value={value} onChange={onChange} placeholder={title} />
       </RowField>
     </Row>
   );
@@ -202,6 +202,54 @@ export function TitleRow({
 
 export function TitleInput(props) {
   return <TextInput {...props} id="name" name="name" />;
+}
+
+export function QueryRow({
+  title,
+  isRequired = false,
+  message = null,
+  mediaTitle,
+  onMediaTitleChange,
+  mediaYear,
+  onMediaYearChange,
+  mediaDoubanID,
+  onMediaDoubanIDChange,
+  mediaIMDbID,
+  onMediaIMDbIDChange,
+  ...res
+}) {
+  return (
+    <Row>
+      <RowHead {...res} title={title} isRequired={isRequired} />
+      <RowField message={message}>
+        <input
+          type="text"
+          value={mediaTitle}
+          onChange={onMediaTitleChange}
+          placeholder="标题"
+        />
+        <input
+          type="text"
+          value={mediaYear}
+          onChange={onMediaYearChange}
+          placeholder="年份"
+        />
+        <input
+          type="text"
+          value={mediaDoubanID}
+          onChange={onMediaDoubanIDChange}
+          placeholder="豆瓣ID"
+        />
+        <input
+          type="text"
+          value={mediaIMDbID}
+          onChange={onMediaIMDbIDChange}
+          placeholder="IMDb ID"
+        />
+        <input type="button" value="获取信息" />
+      </RowField>
+    </Row>
+  );
 }
 
 export function SubTitleRow({
@@ -216,7 +264,7 @@ export function SubTitleRow({
     <Row>
       <RowHead {...res} title={title} isRequired={isRequired} />
       <RowField message={message}>
-        <SubTitleInput value={value} onChange={onChange} />
+        <SubTitleInput value={value} onChange={onChange} placeholder={title} />
       </RowField>
     </Row>
   );
@@ -252,6 +300,7 @@ export function MediaInfoRow({
             width: `${Math.max(startTagValue.toString().length + 7, 10)}ch`,
           }}
           list="start-tag-options"
+          placeholder="起始"
         />
         <datalist id="start-tag-options">
           <option></option>
@@ -268,6 +317,7 @@ export function MediaInfoRow({
             width: `${Math.max(endTagValue.toString().length + 7, 10)}ch`,
           }}
           list="end-tag-options"
+          placeholder="结束"
         />
         <datalist id="end-tag-options">
           <option></option>

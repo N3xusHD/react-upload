@@ -1,10 +1,11 @@
 import {
   FormTable,
-  VideoRow,
   TrackerRow,
   TorrentRow,
   TitleRow,
+  QueryRow,
   SubTitleRow,
+  VideoRow,
   MediaInfoRow,
   SnapshotRow,
 } from "./NHDComponents";
@@ -14,7 +15,7 @@ import parseTorrent from "parse-torrent";
 import getPasskey from "../utils/getPasskey";
 import copyToClipboard from "../utils/copyToClipboard";
 import getSnapshots from "../utils/bundleSnapshots";
-import ptt from "parse-torrent-title";
+import ptt, { DefaultParserResult } from "parse-torrent-title";
 import BFSA from "browser-fs-access";
 import React, { useCallback, useEffect, useState } from "react";
 import fflate from "fflate";
@@ -44,29 +45,6 @@ function formatTorrentName(torrentName: string) {
     .replace(/\bx\.?(26[45])\b/gi, "x$1")
     .replace(/\./g, " ")
     .replace(/\//g, ".");
-}
-
-function useTorrentNameInfo(torrent) {
-  const [torrentNameInfo, setTorrentNameInfo] = useState({ torrentName: "" });
-  useEffect(() => {
-    if (torrent !== null) {
-      parseTorrent.remote(torrent, (err, parsedTorrent) => {
-        if (err) {
-          throw err;
-        }
-        const formattedTorrentName = formatTorrentName(parsedTorrent.name);
-        setTorrentNameInfo({
-          ...ptt.parse(formattedTorrentName),
-          torrentName: formattedTorrentName,
-        });
-      });
-    } else {
-      setTorrentNameInfo({
-        torrentName: "",
-      });
-    }
-  }, [torrent]);
-  return torrentNameInfo;
 }
 
 function useMediaInfo(videos): [string[], boolean, string, boolean, number] {
@@ -118,10 +96,17 @@ function useMediaInfo(videos): [string[], boolean, string, boolean, number] {
 
 export default function NHDUploadForm() {
   const [passkey, setPasskey] = useState("");
-  const [videos, setVideos] = useState([]);
   const [torrent, setTorrent] = useState(null);
   const [title, setTitle] = useState("");
+  const [torrentNameInfo, setTorrentNameInfo] = useState({
+    title: "",
+  } as DefaultParserResult);
+  const [mediaTitle, setMediaTitle] = useState("");
+  const [mediaYear, setMediaYear] = useState("");
+  const [mediaDoubanID, setMediaDoubanID] = useState("");
+  const [mediaIMDbID, setMediaIMDbID] = useState("");
   const [subTitle, setSubTitle] = useState("");
+  const [videos, setVideos] = useState([]);
   const [mediaInfoStartTag, setMediaInfoStartTag] = useState("[box=MediaInfo]");
   const [mediaInfoEndTag, setMediaInfoEndTag] = useState("[/box]");
   const [snapshotCount, setSnapshotCount] = useState(2);
@@ -133,7 +118,6 @@ export default function NHDUploadForm() {
   const [canChangeSnapshotCount, setCanChangeSnapshotCount] = useState(true);
   const [snapshotProgress, setSnapshotProgress] = useState(0);
 
-  const torrentNameInfo = useTorrentNameInfo(torrent);
   const [mediaInfos, canCopyAll, mediaInfo, canCopyFirst, mediaInfoProgress] =
     useMediaInfo(videos);
 
@@ -144,12 +128,26 @@ export default function NHDUploadForm() {
   }, []);
 
   useEffect(() => {
-    setTitle(torrentNameInfo.torrentName);
-  }, [torrentNameInfo]);
+    if (torrent !== null) {
+      parseTorrent.remote(torrent, (err, parsedTorrent) => {
+        if (err) {
+          throw err;
+        }
+        setTitle(formatTorrentName(parsedTorrent.name));
+      });
+    } else {
+      setTitle("");
+    }
+  }, [torrent]);
 
-  const handleVideosChange = useCallback((files) => {
-    setVideos(files);
-  }, []);
+  useEffect(() => {
+    setTorrentNameInfo(ptt.parse(title));
+  }, [title]);
+
+  useEffect(() => {
+    setMediaTitle(torrentNameInfo.title);
+    setMediaYear(torrentNameInfo.year ? torrentNameInfo.year + "" : "");
+  }, [torrentNameInfo]);
 
   const handleTorrentChange = useCallback((files) => {
     if (files.length) {
@@ -163,8 +161,28 @@ export default function NHDUploadForm() {
     setTitle(e.target.value);
   }, []);
 
+  const handleMediaTitleChange = useCallback((e) => {
+    setMediaTitle(e.target.value);
+  }, []);
+
+  const handleMediaYearChange = useCallback((e) => {
+    setMediaYear(e.target.value);
+  }, []);
+
+  const handleMediaDoubanIDChange = useCallback((e) => {
+    setMediaDoubanID(e.target.value);
+  }, []);
+
+  const handleMediaIMDbIDChange = useCallback((e) => {
+    setMediaIMDbID(e.target.value);
+  }, []);
+
   const handleSubTitleChange = useCallback((e) => {
     setSubTitle(e.target.value);
+  }, []);
+
+  const handleVideosChange = useCallback((files) => {
+    setVideos(files);
   }, []);
 
   const handleCopyFirstMediaInfo = useCallback(() => {
@@ -289,13 +307,21 @@ export default function NHDUploadForm() {
         message={
           <>
             (默认值将自动根据种子文件推测，<b>要求规范填写</b>，如
-            <i>
-              {torrentNameInfo.torrentName ||
-                "Blade Runner 1982 Final Cut 720p HDDVD DTS x264-ESiR"}
-            </i>
-            )
+            <i>"Blade Runner 1982 Final Cut 720p HDDVD DTS x264-ESiR"</i>)
           </>
         }
+      />
+      <QueryRow
+        title="查询信息"
+        isRequired={false}
+        mediaTitle={mediaTitle}
+        onMediaTitleChange={handleMediaTitleChange}
+        mediaYear={mediaYear}
+        onMediaYearChange={handleMediaYearChange}
+        mediaDoubanID={mediaDoubanID}
+        onMediaDoubanIDChange={handleMediaDoubanIDChange}
+        mediaIMDbID={mediaIMDbID}
+        onMediaIMDbIDChange={handleMediaIMDbIDChange}
       />
       <SubTitleRow
         title="副标题"
@@ -304,7 +330,8 @@ export default function NHDUploadForm() {
         onChange={handleSubTitleChange}
         message={
           <>
-            (将在种子页面种子标题下显示，一般填写资源的<b>中文名称</b>)
+            (将在种子页面种子标题下显示，一般填写资源的<b>中文名称</b>与
+            <b>简介关键词</b>)
           </>
         }
       />

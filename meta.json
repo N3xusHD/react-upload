@@ -1,14 +1,20 @@
 {
-    "namespace": "github.com/cvzi",
-    "copyright": "2020, cuzi (https://openuserjs.org/users/cuzi)",
-    "require": [
-        "https://unpkg.com/react@17/umd/react.development.js",
-        "https://unpkg.com/react-dom@17/umd/react-dom.development.js"
-    ],
-    "include": [
-        "https://github.com/*"
-    ],
-    "grant": [
-        "GM.getValue"
-    ]
+  "namespace": "greasyfork.org/zh-CN/users/152136-secant",
+  "require": [
+    "https://unpkg.com/react@17/umd/react.development.js",
+    "https://unpkg.com/react-dom@17/umd/react-dom.development.js",
+    "https://bafybeibc26gmqn4snihclu7u5ygegeappljjturhzqwmmybadwxkiocccy.ipfs.dweb.link/browser-fs-access.min.js",
+    "https://bafybeiervwsbjx3zo72leklcet3e6ulfpihowzcr6hai2qihn52snfdhou.ipfs.dweb.link/fflate.min.js",
+    "https://bafybeicox2pi3aotjaasstlg33swy4ro2kmswlahietiagflrhv27zcnba.ipfs.dweb.link/media-info-lib.min.js",
+    "https://bafybeihaebxrkfpay7lf7ykvfhty5sc2z5sl7at6zqkr6ecwptq46zlhwu.ipfs.dweb.link/parse-torrent.min.js",
+    "https://bafybeia52std5ilysdycsh7mj5hppivfwkrpvcdaddztwsyz5lci2yfynm.ipfs.dweb.link/parse-torrent-title.min.js",
+    "https://bafybeig4px5ukdjcozdjkco3amms2d7mgyndsuqis23dn3sbdgj74mp7v4.ipfs.dweb.link/react-progress-bar.min.js"
+  ],
+  "include": [
+    "http://www.nexushd.org/upload.php*",
+    "https://v6.nexushd.org/upload.php*",
+    "http://www-nexushd-org.webvpn.zju.edu.cn:8001/upload.php*"
+  ],
+  "grant": ["GM.xmlHttpRequest"],
+  "connect": ["mediaarea.net", "localhost"]
 }

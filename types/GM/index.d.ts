@@ -23,6 +23,45 @@ declare namespace GMType {
   type NotificationOnDone = (this: NotificationThis, clicked: boolean) => any;
 }
 
+interface GMXHRDetails {
+  method?: "GET" | "HEAD" | "POST";
+  url: string;
+  headers?: {
+    [key: string]: string;
+  };
+  data?: string;
+  cookie?: string;
+  binary?: boolean;
+  nocache?: boolean;
+  revalidate?: boolean;
+  timeout?: number;
+  context?: any;
+  responseType?: "arraybuffer" | "blob" | "json" | "stream";
+  overrideMimeType?: string;
+  anonymous?: boolean;
+  fetch?: boolean;
+  user?: string;
+  password?: string;
+  onabort?: (arg0: any) => any;
+  onerror?: (arg0: any) => any;
+  onloadstart?: (arg0: any) => any;
+  onprogress?: (arg0: any) => any;
+  onreadystatechange?: (arg0: any) => any;
+  ontimeout?: (arg0: any) => any;
+  onload?: (r: {
+    finalUrl: string;
+    readyState: number;
+    status: number;
+    statusText: number;
+    responseHeaders: {
+      [key: string]: string;
+    };
+    response: ArrayBuffer | Blob | any | ReadableStream;
+    responseXML: XMLDocument;
+    responseText: string;
+  }) => any;
+}
+
 interface GM {
   getValue(
     key: string,
@@ -49,6 +88,10 @@ interface GM {
     image?: string,
     onclick?: GMType.NotificationOnDone
   ): Promise<void>;
+
+  xmlHttpRequest(details: GMXHRDetails): {
+    abort: (arg0: any) => any;
+  };
 }
 
 declare var GM: GM;

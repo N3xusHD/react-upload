@@ -210,12 +210,15 @@ export function QueryRow({
   message = null,
   mediaTitle,
   onMediaTitleChange,
+  mediaSeason,
+  onMediaSeasonChange,
   mediaYear,
   onMediaYearChange,
   mediaDoubanID,
   onMediaDoubanIDChange,
   mediaIMDbID,
   onMediaIMDbIDChange,
+  onSearchMedia,
   ...res
 }) {
   return (
@@ -227,26 +230,47 @@ export function QueryRow({
           value={mediaTitle}
           onChange={onMediaTitleChange}
           placeholder="标题"
+          style={{
+            width: "180px",
+          }}
+        />
+        <input
+          type="text"
+          value={mediaSeason}
+          onChange={onMediaSeasonChange}
+          placeholder="季"
+          style={{
+            width: "90px",
+          }}
         />
         <input
           type="text"
           value={mediaYear}
           onChange={onMediaYearChange}
           placeholder="年份"
+          style={{
+            width: "90px",
+          }}
         />
         <input
           type="text"
           value={mediaDoubanID}
           onChange={onMediaDoubanIDChange}
           placeholder="豆瓣ID"
+          style={{
+            width: "90px",
+          }}
         />
         <input
           type="text"
           value={mediaIMDbID}
           onChange={onMediaIMDbIDChange}
           placeholder="IMDb ID"
+          style={{
+            width: "90px",
+          }}
         />
-        <input type="button" value="获取信息" />
+        <input type="button" value="获取信息" onClick={onSearchMedia} />
       </RowField>
     </Row>
   );

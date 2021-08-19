@@ -20,6 +20,7 @@ import BFSA from "browser-fs-access";
 import React, { useCallback, useEffect, useState } from "react";
 import fflate from "fflate";
 import ProgressBar from "@ramonak/react-progress-bar";
+import searchMedia from "../utils/searchMedia";
 
 const MediaInfoModulePromise = new Promise((resolve) => {
   const MediaInfoLibPromise = MediaInfoLib({
@@ -102,6 +103,7 @@ export default function NHDUploadForm() {
     title: "",
   } as DefaultParserResult);
   const [mediaTitle, setMediaTitle] = useState("");
+  const [mediaSeason, setMediaSeason] = useState("");
   const [mediaYear, setMediaYear] = useState("");
   const [mediaDoubanID, setMediaDoubanID] = useState("");
   const [mediaIMDbID, setMediaIMDbID] = useState("");
@@ -141,12 +143,14 @@ export default function NHDUploadForm() {
   }, [torrent]);
 
   useEffect(() => {
-    setTorrentNameInfo(ptt.parse(title));
+    const info = ptt.parse(title);
+    setTorrentNameInfo(info);
   }, [title]);
 
   useEffect(() => {
     setMediaTitle(torrentNameInfo.title);
     setMediaYear(torrentNameInfo.year ? torrentNameInfo.year + "" : "");
+    setMediaSeason(torrentNameInfo.season ? torrentNameInfo.season + "" : "");
   }, [torrentNameInfo]);
 
   const handleTorrentChange = useCallback((files) => {
@@ -165,6 +169,10 @@ export default function NHDUploadForm() {
     setMediaTitle(e.target.value);
   }, []);
 
+  const handleMediaSeasonChange = useCallback((e) => {
+    setMediaSeason(e.target.value);
+  }, []);
+
   const handleMediaYearChange = useCallback((e) => {
     setMediaYear(e.target.value);
   }, []);
@@ -176,6 +184,26 @@ export default function NHDUploadForm() {
   const handleMediaIMDbIDChange = useCallback((e) => {
     setMediaIMDbID(e.target.value);
   }, []);
+
+  const handleSearchMedia = useCallback(() => {
+    async function f() {
+      /*
+      const media = await searchMedia(
+        {
+          title: mediaTitle || undefined,
+          season: mediaSeason || undefined,
+          year: mediaYear || undefined,
+          DoubanID: mediaDoubanID || undefined,
+          IMDbID: mediaIMDbID || undefined,
+        },
+        () => {}
+      );
+      console.log(media);
+      */
+      console.log("search pressed");
+    }
+    f();
+  }, [mediaTitle, mediaYear, mediaDoubanID, mediaIMDbID]);
 
   const handleSubTitleChange = useCallback((e) => {
     setSubTitle(e.target.value);
@@ -316,12 +344,15 @@ export default function NHDUploadForm() {
         isRequired={false}
         mediaTitle={mediaTitle}
         onMediaTitleChange={handleMediaTitleChange}
+        mediaSeason={mediaSeason}
+        onMediaSeasonChange={handleMediaSeasonChange}
         mediaYear={mediaYear}
         onMediaYearChange={handleMediaYearChange}
         mediaDoubanID={mediaDoubanID}
         onMediaDoubanIDChange={handleMediaDoubanIDChange}
         mediaIMDbID={mediaIMDbID}
         onMediaIMDbIDChange={handleMediaIMDbIDChange}
+        onSearchMedia={handleSearchMedia}
       />
       <SubTitleRow
         title="副标题"

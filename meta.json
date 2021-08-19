@@ -7,7 +7,7 @@
     "https://bafybeiervwsbjx3zo72leklcet3e6ulfpihowzcr6hai2qihn52snfdhou.ipfs.dweb.link/fflate.min.js",
     "https://bafybeicox2pi3aotjaasstlg33swy4ro2kmswlahietiagflrhv27zcnba.ipfs.dweb.link/media-info-lib.min.js",
     "https://bafybeihaebxrkfpay7lf7ykvfhty5sc2z5sl7at6zqkr6ecwptq46zlhwu.ipfs.dweb.link/parse-torrent.min.js",
-    "https://bafybeia52std5ilysdycsh7mj5hppivfwkrpvcdaddztwsyz5lci2yfynm.ipfs.dweb.link/parse-torrent-title.min.js",
+    "https://bafybeia6q3wmw2lwczigfi4xrn2lveymynu6o6lrvhsuyxux3v2hojt4ie.ipfs.dweb.link/parse-torrent-title.min.js",
     "https://bafybeig4px5ukdjcozdjkco3amms2d7mgyndsuqis23dn3sbdgj74mp7v4.ipfs.dweb.link/react-progress-bar.min.js"
   ],
   "include": [
@@ -16,5 +16,10 @@
     "http://www-nexushd-org.webvpn.zju.edu.cn:8001/upload.php*"
   ],
   "grant": ["GM.xmlHttpRequest"],
-  "connect": ["mediaarea.net", "localhost"]
+  "connect": [
+    "localhost",
+    "mediaarea.net",
+    "movie.douban.com",
+    "tmdb.secant.workers.dev"
+  ]
 }

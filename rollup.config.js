@@ -5,6 +5,7 @@ import replace from "@rollup/plugin-replace";
 import typescriptPlugin from "@rollup/plugin-typescript";
 import typescript from "typescript";
 import metablock from "rollup-plugin-userscript-metablock";
+import { terser } from "rollup-plugin-terser";
 
 const path = require("path");
 const fs = require("fs");
@@ -23,23 +24,29 @@ const globals = {
   fflate: "fflate",
 };
 
+const banner = () =>
+  "\n/*\n" +
+  fs.readFileSync("./LICENSE", "utf8") +
+  `*/\n\n/* globals ${Object.entries(globals)
+    .map((e) => e[1])
+    .join(", ")} */`;
+
 fs.mkdir("dist/", { recursive: true }, () => null);
 
 export default {
   input: "src/index.js",
   output: {
-    file: "dist/bundle.user.js",
+    file: `dist/${
+      process.env.release ? `release-${pkg.version}` : "bundle.min"
+    }.user.js`,
     format: "iife",
     name: "rollupUserScript",
-    banner: () =>
-      "\n/*\n" +
-      fs.readFileSync("./LICENSE", "utf8") +
-      `*/\n\n/* globals ${Object.entries(globals)
-        .map((e) => e[1])
-        .join(", ")} */`,
-    sourcemap: true,
+    banner: banner,
+    sourcemap: !process.env.release,
     globals: globals,
+    plugins: process.env.release ? [] : [terser()],
   },
+
   plugins: [
     replace({
       "process.env.NODE_ENV": JSON.stringify("production"),

@@ -1,7 +1,7 @@
 "use strict";
 
 (function () {
-  const url = `http://localhost:%PORT%/bundle.user.js?${Date.now()}`;
+  const url = `http://localhost:%PORT%/bundle.min.user.js?${Date.now()}`;
   new Promise(function loadBundleFromServer(resolve, reject) {
     const req = GM.xmlHttpRequest({
       method: "GET",

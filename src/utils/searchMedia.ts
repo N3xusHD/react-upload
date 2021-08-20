@@ -124,7 +124,7 @@ export default async function searchMedia(media: MediaType, state = "start") {
 }
 
 /* wrapper actions (media: MediaType) => Promise<void> */
-async function doubanSuggestImdbId(media: MediaType): Promise<void> {
+async function doubanSuggestImdbId(media: MediaType): Promise<MediaType> {
   try {
     const [{ id, year }] = await doubanSuggestApi(media.imdbId);
     media.doubanId = id;
@@ -132,9 +132,10 @@ async function doubanSuggestImdbId(media: MediaType): Promise<void> {
   } catch (e) {
     console.warn(e);
   }
+  return media;
 }
 
-async function doubanSuggestTitle(media: MediaType): Promise<void> {
+async function doubanSuggestTitle(media: MediaType): Promise<MediaType> {
   try {
     const { title, season, year } = media;
     const queryString =
@@ -169,13 +170,31 @@ async function doubanSuggestTitle(media: MediaType): Promise<void> {
   } catch (e) {
     console.warn(e);
   }
+  return media;
 }
 
-async function tmdbSearch(media: MediaType): Promise<void> {}
+async function tmdbSearch(media: MediaType): Promise<MediaType> {
+  try {
+    const { title, season, year, type } = media;
+    if (
+      (season && (media.type = MediaTypeType.TV)) ||
+      type === MediaTypeType.TV
+    ) {
+      const response = await tmdbSearchApi(title, year, type);
+    }
+  } catch (e) {
+    console.warn(e);
+  }
+  return media;
+}
 
-async function tmdbDetails(media: MediaType): Promise<void> {}
+async function tmdbDetails(media: MediaType): Promise<MediaType> {
+  return media;
+}
 
-async function parseDoubanSubject(media: MediaType): Promise<void> {}
+async function parseDoubanSubject(media: MediaType): Promise<MediaType> {
+  return media;
+}
 
 /* apis */
 async function doubanSuggestApi(queryString: string): Promise<DoubanSuggest[]> {

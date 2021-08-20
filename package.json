@@ -71,7 +71,6 @@
     "native-file-system-adapter": "^1.0.1",
     "parse-torrent": "^9.1.4",
     "parse-torrent-title": "git+https://github.com/TheBeastLT/parse-torrent-title.git",
-    "prop-types": "^15.7.2",
-    "xstate": "^4.23.1"
+    "prop-types": "^15.7.2"
   }
 }

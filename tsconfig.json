@@ -5,6 +5,7 @@
     "removeComments": false,
     "target": "ES2020",
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "jsx": "react",
     "module": "es6",

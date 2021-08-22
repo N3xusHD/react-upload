@@ -16,10 +16,5 @@
     "http://www-nexushd-org.webvpn.zju.edu.cn:8001/upload.php*"
   ],
   "grant": ["GM.xmlHttpRequest"],
-  "connect": [
-    "localhost",
-    "mediaarea.net",
-    "movie.douban.com",
-    "tmdb.secant.workers.dev"
-  ]
+  "connect": ["localhost", "mediaarea.net", "movie.douban.com"]
 }

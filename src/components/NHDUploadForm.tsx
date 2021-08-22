@@ -105,8 +105,8 @@ export default function NHDUploadForm() {
   const [mediaTitle, setMediaTitle] = useState("");
   const [mediaSeason, setMediaSeason] = useState("");
   const [mediaYear, setMediaYear] = useState("");
-  const [mediaDoubanID, setMediaDoubanID] = useState("");
-  const [mediaIMDbID, setMediaIMDbID] = useState("");
+  const [mediaDoubanId, setMediaDoubanId] = useState("");
+  const [mediaImdbId, setMediaImdbId] = useState("");
   const [subTitle, setSubTitle] = useState("");
   const [videos, setVideos] = useState([]);
   const [mediaInfoStartTag, setMediaInfoStartTag] = useState("[box=MediaInfo]");
@@ -177,33 +177,27 @@ export default function NHDUploadForm() {
     setMediaYear(e.target.value);
   }, []);
 
-  const handleMediaDoubanIDChange = useCallback((e) => {
-    setMediaDoubanID(e.target.value);
+  const handleMediaDoubanIdChange = useCallback((e) => {
+    setMediaDoubanId(e.target.value);
   }, []);
 
-  const handleMediaIMDbIDChange = useCallback((e) => {
-    setMediaIMDbID(e.target.value);
+  const handleMediaImdbIdChange = useCallback((e) => {
+    setMediaImdbId(e.target.value);
   }, []);
 
   const handleSearchMedia = useCallback(() => {
     async function f() {
-      /*
-      const media = await searchMedia(
-        {
-          title: mediaTitle || undefined,
-          season: mediaSeason || undefined,
-          year: mediaYear || undefined,
-          DoubanID: mediaDoubanID || undefined,
-          IMDbID: mediaIMDbID || undefined,
-        },
-        () => {}
-      );
+      const media = await searchMedia({
+        title: mediaTitle || undefined,
+        season: mediaSeason || undefined,
+        year: mediaYear || undefined,
+        doubanId: mediaDoubanId || undefined,
+        imdbId: mediaImdbId || undefined,
+      });
       console.log(media);
-      */
-      console.log("search pressed");
     }
     f();
-  }, [mediaTitle, mediaYear, mediaDoubanID, mediaIMDbID]);
+  }, [mediaTitle, mediaYear, mediaDoubanId, mediaImdbId]);
 
   const handleSubTitleChange = useCallback((e) => {
     setSubTitle(e.target.value);
@@ -348,10 +342,10 @@ export default function NHDUploadForm() {
         onMediaSeasonChange={handleMediaSeasonChange}
         mediaYear={mediaYear}
         onMediaYearChange={handleMediaYearChange}
-        mediaDoubanID={mediaDoubanID}
-        onMediaDoubanIDChange={handleMediaDoubanIDChange}
-        mediaIMDbID={mediaIMDbID}
-        onMediaIMDbIDChange={handleMediaIMDbIDChange}
+        mediaDoubanId={mediaDoubanId}
+        onMediaDoubanIdChange={handleMediaDoubanIdChange}
+        mediaImdbId={mediaImdbId}
+        onMediaImdbIdChange={handleMediaImdbIdChange}
         onSearchMedia={handleSearchMedia}
       />
       <SubTitleRow

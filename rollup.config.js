@@ -6,6 +6,7 @@ import typescriptPlugin from "@rollup/plugin-typescript";
 import typescript from "typescript";
 import metablock from "rollup-plugin-userscript-metablock";
 import { terser } from "rollup-plugin-terser";
+import json from "@rollup/plugin-json";
 
 const path = require("path");
 const fs = require("fs");
@@ -71,6 +72,7 @@ export default {
         license: pkg.license,
       },
     }),
+    json(),
   ],
   external: (id) => {
     return [...Object.keys(globals)].some(

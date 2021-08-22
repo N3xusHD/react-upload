@@ -214,10 +214,10 @@ export function QueryRow({
   onMediaSeasonChange,
   mediaYear,
   onMediaYearChange,
-  mediaDoubanID,
-  onMediaDoubanIDChange,
-  mediaIMDbID,
-  onMediaIMDbIDChange,
+  mediaDoubanId,
+  onMediaDoubanIdChange,
+  mediaImdbId,
+  onMediaImdbIdChange,
   onSearchMedia,
   ...res
 }) {
@@ -254,8 +254,8 @@ export function QueryRow({
         />
         <input
           type="text"
-          value={mediaDoubanID}
-          onChange={onMediaDoubanIDChange}
+          value={mediaDoubanId}
+          onChange={onMediaDoubanIdChange}
           placeholder="豆瓣ID"
           style={{
             width: "90px",
@@ -263,8 +263,8 @@ export function QueryRow({
         />
         <input
           type="text"
-          value={mediaIMDbID}
-          onChange={onMediaIMDbIDChange}
+          value={mediaImdbId}
+          onChange={onMediaImdbIdChange}
           placeholder="IMDb ID"
           style={{
             width: "90px",

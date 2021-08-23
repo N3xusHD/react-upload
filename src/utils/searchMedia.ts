@@ -132,7 +132,7 @@ interface TmdbMovieDetails {
 }
 
 interface TmdbTvDetails {
-  backdrop_path: string | null;
+  backdrop_path?: string | null;
   created_by?: {
     id?: number;
     credit_id?: string;
@@ -342,9 +342,7 @@ async function doubanSuggestTitle(media: MediaObj): Promise<MediaObj> {
   const { title, season, year } = media;
   const queryString =
     title +
-    (season
-      ? (media.type = TmdbMediaType.TV) && ` season ${media.season}`
-      : "");
+    (season ? (media.type = TmdbMediaType.TV) && ` season ${season}` : "");
   const responses = await doubanSuggestApi(queryString);
   const respCount = responses.length;
   responses.sort(
@@ -366,6 +364,7 @@ async function doubanSuggestTitle(media: MediaObj): Promise<MediaObj> {
   return media;
 }
 
+/*
 const tmdbSearchTransition = new WeakMap();
 tmdbSearchTransition
   .set(start, (media: MediaObj) => {
@@ -454,6 +453,70 @@ async function tmdbSearchMovie(media: MediaObj): Promise<MediaObj> {
     if (response) {
       media.tmdbId = "" + responses[0].id;
       media.type = TmdbMediaType.MOVIE;
+    }
+  }
+  return media;
+}
+*/
+async function tmdbSearch(media: MediaObj): Promise<MediaObj> {
+  const { title, season, year } = media;
+  let tvSearchPromise = Promise.resolve({
+      results: [],
+    }) as Promise<TmdbSearchTv>,
+    movieSearchPromise = Promise.resolve({
+      results: [],
+    }) as Promise<TmdbSearchMovie>;
+  if (season && !media.type) {
+    media.type = TmdbMediaType.TV;
+  }
+  const { type } = media;
+  if (!type || type === TmdbMediaType.MOVIE) {
+    movieSearchPromise = tmdbSearchApi(title, year, TmdbMediaType.MOVIE);
+  }
+  if (!type || type === TmdbMediaType.TV) {
+    tvSearchPromise = tmdbSearchApi(
+      title,
+      year,
+      TmdbMediaType.TV
+    ) as Promise<TmdbSearchTv>;
+  }
+  const { results: movieSearchResults } = await movieSearchPromise;
+  const { results: tvSearchResults } = await tvSearchPromise;
+  const results = [
+    ...movieSearchResults.map((e) => ({
+      ...e,
+      tmdbMediaType: TmdbMediaType.MOVIE,
+    })),
+    ...tvSearchResults.map((e) => ({
+      ...e,
+      tmdbMediaType: TmdbMediaType.TV,
+      title: e.name,
+      original_title: e.original_name,
+      release_date: e.first_air_date,
+    })),
+  ];
+  const resCount = results.length;
+  results.sort(
+    (r1, r2) =>
+      Math.min(
+        rankTitle(r1.title, title),
+        rankTitle(r1.original_title, title)
+      ) -
+      Math.min(rankTitle(r2.title, title), rankTitle(r2.original_title, title))
+  );
+  if (!year && resCount) {
+    media.tmdbId = "" + results[0].id;
+    media.type = results[0].tmdbMediaType;
+  } else if (resCount) {
+    const numYear = parseInt(year, 10);
+    const result = results.find((r) =>
+      r.tmdbMediaType === TmdbMediaType.TV
+        ? parseInt(r.release_date, 10) - numYear <= 1
+        : Math.abs(parseInt(r.release_date, 10) - numYear) <= 1
+    );
+    if (result) {
+      media.tmdbId = "" + result.id;
+      media.type = result.tmdbMediaType;
     }
   }
   return media;

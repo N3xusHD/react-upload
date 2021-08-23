@@ -125,8 +125,10 @@ export function TrackerRow({ passkey, ...res }) {
   );
 }
 
-export function VideoRow({
-  onChange = (files: FileList): any => {},
+export function CreateTorrentRow({
+  createTorrentFrom,
+  onCreateTorrentFromChange,
+  onCreateTorrent,
   title,
   isRequired = false,
   message = null,
@@ -136,23 +138,17 @@ export function VideoRow({
     <Row>
       <RowHead {...res} title={title} isRequired={isRequired} />
       <RowField message={message}>
-        <VideoInput onChange={onChange} />
+        <select value={createTorrentFrom} onChange={onCreateTorrentFromChange}>
+          <option value="file">文件</option>
+          <option value="directory">目录</option>
+        </select>
+        <input
+          type="button"
+          value={`选择${createTorrentFrom === "file" ? "文件" : "目录"}`}
+          onClick={onCreateTorrent}
+        />
       </RowField>
     </Row>
-  );
-}
-
-export function VideoInput({
-  onChange = (files: FileList): any => {},
-  ...res
-}) {
-  return (
-    <FileInput
-      {...res}
-      multiple={true}
-      accept=".mkv, .ts, video/*"
-      onChange={onChange}
-    />
   );
 }
 
@@ -296,6 +292,81 @@ export function SubTitleRow({
 
 export function SubTitleInput(props) {
   return <TextInput {...props} name="small_descr" />;
+}
+
+export function ImdbRow({
+  value,
+  onChange,
+  title,
+  isRequired = false,
+  message = null,
+  ...res
+}) {
+  return (
+    <Row>
+      <RowHead {...res} title={title} isRequired={isRequired} />
+      <RowField message={message}>
+        <ImdbInput value={value} onChange={onChange} placeholder={title} />
+      </RowField>
+    </Row>
+  );
+}
+
+export function ImdbInput(props) {
+  return <TextInput {...props} name="url" />;
+}
+
+export function DoubanRow({
+  value,
+  onChange,
+  title,
+  isRequired = false,
+  message = null,
+  ...res
+}) {
+  return (
+    <Row>
+      <RowHead {...res} title={title} isRequired={isRequired} />
+      <RowField message={message}>
+        <DoubanInput value={value} onChange={onChange} placeholder={title} />
+      </RowField>
+    </Row>
+  );
+}
+
+export function DoubanInput(props) {
+  return <TextInput {...props} name="douban_url" />;
+}
+
+export function VideoRow({
+  onChange = (files: FileList): any => {},
+  title,
+  isRequired = false,
+  message = null,
+  ...res
+}) {
+  return (
+    <Row>
+      <RowHead {...res} title={title} isRequired={isRequired} />
+      <RowField message={message}>
+        <VideoInput onChange={onChange} />
+      </RowField>
+    </Row>
+  );
+}
+
+export function VideoInput({
+  onChange = (files: FileList): any => {},
+  ...res
+}) {
+  return (
+    <FileInput
+      {...res}
+      multiple={true}
+      accept=".mkv, .ts, video/*"
+      onChange={onChange}
+    />
+  );
 }
 
 export function MediaInfoRow({

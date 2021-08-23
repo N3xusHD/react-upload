@@ -23,6 +23,7 @@ const globals = {
   "@ffmpeg/ffmpeg": "FFmpeg",
   "@ramonak/react-progress-bar": "ProgressBar",
   fflate: "fflate",
+  "create-torrent": "createTorrent",
 };
 
 const banner = () =>

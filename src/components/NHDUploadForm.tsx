@@ -1,10 +1,13 @@
 import {
   FormTable,
   TrackerRow,
+  CreateTorrentRow,
   TorrentRow,
   TitleRow,
   QueryRow,
   SubTitleRow,
+  ImdbRow,
+  DoubanRow,
   VideoRow,
   MediaInfoRow,
   SnapshotRow,
@@ -48,7 +51,9 @@ function formatTorrentName(torrentName: string) {
     .replace(/\//g, ".");
 }
 
-function useMediaInfo(videos): [string[], boolean, string, boolean, number] {
+function useMediaInfo(
+  videos: File[]
+): [string[], boolean, string, boolean, number] {
   const [mediaInfos, setMediaInfos] = useState([]);
   const [canCopyAll, setCanCopyAll] = useState(false);
   const [mediaInfo, setMediaInfo] = useState("");
@@ -97,6 +102,9 @@ function useMediaInfo(videos): [string[], boolean, string, boolean, number] {
 
 export default function NHDUploadForm() {
   const [passkey, setPasskey] = useState("");
+  const [createTorrentFrom, setCreateTorrentFrom] = useState("file");
+  const [createTorrentFromFiles, setCreateTorrentFromFiles] =
+    useState<FileList>(new DataTransfer().files);
   const [torrent, setTorrent] = useState(null);
   const [title, setTitle] = useState("");
   const [torrentNameInfo, setTorrentNameInfo] = useState({
@@ -107,8 +115,11 @@ export default function NHDUploadForm() {
   const [mediaYear, setMediaYear] = useState("");
   const [mediaDoubanId, setMediaDoubanId] = useState("");
   const [mediaImdbId, setMediaImdbId] = useState("");
+  const [mediaData, setMediaData] = useState({} as any);
   const [subTitle, setSubTitle] = useState("");
-  const [videos, setVideos] = useState([]);
+  const [imdbLink, setImdbLink] = useState("");
+  const [doubanLink, setDoubanLink] = useState("");
+  const [videos, setVideos] = useState<File[]>([]);
   const [mediaInfoStartTag, setMediaInfoStartTag] = useState("[box=MediaInfo]");
   const [mediaInfoEndTag, setMediaInfoEndTag] = useState("[/box]");
   const [snapshotCount, setSnapshotCount] = useState(2);
@@ -130,6 +141,10 @@ export default function NHDUploadForm() {
   }, []);
 
   useEffect(() => {
+    console.log(createTorrentFromFiles);
+  }, [createTorrentFromFiles]);
+
+  useEffect(() => {
     if (torrent !== null) {
       parseTorrent.remote(torrent, (err, parsedTorrent) => {
         if (err) {
@@ -149,9 +164,66 @@ export default function NHDUploadForm() {
 
   useEffect(() => {
     setMediaTitle(torrentNameInfo.title);
-    setMediaYear(torrentNameInfo.year ? torrentNameInfo.year + "" : "");
     setMediaSeason(torrentNameInfo.season ? torrentNameInfo.season + "" : "");
+    setMediaYear(torrentNameInfo.year ? torrentNameInfo.year + "" : "");
+    setMediaDoubanId("");
+    setMediaImdbId("");
   }, [torrentNameInfo]);
+
+  useEffect(() => {
+    const m = mediaImdbId.match(/\d{7,}/);
+    if (m) {
+      setImdbLink(`https://www.imdb.com/title/tt${m[0]}/`);
+    }
+  }, [mediaImdbId]);
+
+  useEffect(() => {
+    const m = mediaDoubanId.match(/\d+/);
+    if (m) {
+      setDoubanLink(`https://www.douban.com/subject/${m}/`);
+    }
+  }, [mediaDoubanId]);
+
+  useEffect(() => {
+    const { year, imdbId, doubanId } = mediaData;
+    setMediaYear(year || "");
+    setMediaImdbId(imdbId || "");
+    setMediaDoubanId(doubanId || "");
+  }, [mediaData]);
+
+  const handleCreateTorrentFromChange = useCallback(
+    (e) => {
+      setCreateTorrentFrom(e.target.value);
+    },
+    [createTorrentFrom]
+  );
+
+  const handleCreateTorrent = useCallback(() => {
+    const dT = new DataTransfer();
+    async function f() {
+      switch (createTorrentFrom) {
+        case "file": {
+          dT.items.add(
+            await BFSA.fileOpen({
+              mimeTypes: [".mkv", ".ts", "video/*"],
+              id: "create-torrent-from-file",
+            })
+          );
+          setCreateTorrentFromFiles(dT.files);
+        }
+        case "directory": {
+          for (let file of await BFSA.directoryOpen({
+            recursive: true,
+            id: "create-torrent-from-directory",
+          })) {
+            dT.items.add(file);
+          }
+          setCreateTorrentFromFiles(dT.files);
+        }
+      }
+    }
+    f();
+  }, [createTorrentFrom]);
 
   const handleTorrentChange = useCallback((files) => {
     if (files.length) {
@@ -194,13 +266,21 @@ export default function NHDUploadForm() {
         doubanId: mediaDoubanId || undefined,
         imdbId: mediaImdbId || undefined,
       });
-      console.log(media);
+      setMediaData(media);
     }
     f();
-  }, [mediaTitle, mediaYear, mediaDoubanId, mediaImdbId]);
+  }, [mediaTitle, mediaSeason, mediaYear, mediaDoubanId, mediaImdbId]);
 
   const handleSubTitleChange = useCallback((e) => {
     setSubTitle(e.target.value);
+  }, []);
+
+  const handleImdbLinkChange = useCallback((e) => {
+    setImdbLink(e.target.value);
+  }, []);
+
+  const handleDoubanLinkChange = useCallback((e) => {
+    setDoubanLink(e.target.value);
   }, []);
 
   const handleVideosChange = useCallback((files) => {
@@ -284,6 +364,7 @@ export default function NHDUploadForm() {
     BFSA.fileSave(snapshotBundle, {
       fileName: snapshotBundle.name,
       extensions: [".zip"],
+      id: "download-snapshots",
     });
   }, [snapshotBundle]);
 
@@ -316,6 +397,12 @@ export default function NHDUploadForm() {
   return (
     <FormTable>
       <TrackerRow passkey={passkey} />
+      <CreateTorrentRow
+        title="制作种子"
+        createTorrentFrom={createTorrentFrom}
+        onCreateTorrentFromChange={handleCreateTorrentFromChange}
+        onCreateTorrent={handleCreateTorrent}
+      />
       <TorrentRow
         title="种子文件"
         isRequired={true}
@@ -335,7 +422,6 @@ export default function NHDUploadForm() {
       />
       <QueryRow
         title="查询信息"
-        isRequired={false}
         mediaTitle={mediaTitle}
         onMediaTitleChange={handleMediaTitleChange}
         mediaSeason={mediaSeason}
@@ -350,7 +436,6 @@ export default function NHDUploadForm() {
       />
       <SubTitleRow
         title="副标题"
-        isRequired={false}
         value={subTitle}
         onChange={handleSubTitleChange}
         message={
@@ -360,9 +445,38 @@ export default function NHDUploadForm() {
           </>
         }
       />
+      <ImdbRow
+        title="IMDb链接"
+        value={imdbLink}
+        onChange={handleImdbLinkChange}
+        message={
+          <>
+            (来自
+            <strong>
+              <a href="https://www.imdb.com">IMDb</a>
+            </strong>
+            的链接。如电影<b>The Dark Knight</b>的链接是
+            <b>https://www.imdb.com/title/tt0468569/</b>)
+          </>
+        }
+      />
+      <DoubanRow
+        title="豆瓣链接"
+        value={doubanLink}
+        onChange={handleDoubanLinkChange}
+        message={
+          <>
+            (来自
+            <strong>
+              <a href="https://www.douban.com">豆瓣</a>
+            </strong>
+            的链接(电影或唱片)。如电影<b>The Dark Knight</b>的链接是
+            <b>https://movie.douban.com/subject/1851857/</b>)
+          </>
+        }
+      />
       <VideoRow
         title="视频文件"
-        isRequired={false}
         onChange={handleVideosChange}
         message={
           <>
@@ -373,7 +487,6 @@ export default function NHDUploadForm() {
       />
       <MediaInfoRow
         title="MediaInfo"
-        isRequired={false}
         startTagValue={mediaInfoStartTag}
         onStartTagChange={handleMediaInfoStartTagChange}
         endTagValue={mediaInfoEndTag}
@@ -395,7 +508,6 @@ export default function NHDUploadForm() {
       />
       <SnapshotRow
         title="视频截图"
-        isRequired={false}
         value={snapshotCount}
         onChange={handleSnapshotCountChange}
         canChangeSnapshotCount={canChangeSnapshotCount}

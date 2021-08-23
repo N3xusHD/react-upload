@@ -77,7 +77,7 @@
     "jszip": "^3.7.1",
     "native-file-system-adapter": "^1.0.1",
     "parse-torrent": "^9.1.4",
-    "parse-torrent-title": "git+https://github.com/TheBeastLT/parse-torrent-title.git",
+    "parse-torrent-title": "github:TheBeastLT/parse-torrent-title",
     "prop-types": "^15.7.2"
   }
 }
